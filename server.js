@@ -1,3 +1,4 @@
+require('dotenv').config();
 const http = require('http');
 const server = http.createServer();
 const io = require('socket.io')(server, {
@@ -17,6 +18,8 @@ io.on('connection', (socket) => {
         if (!usersMap.has(orderId)) {
             // Si no existe, crear una nueva lista y asociarla con el número de orden
             usersMap.set(orderId, []);
+        }
+        if(!messagesMap.has(orderId)){
             messagesMap.set(orderId, []);
         }
         // Agregar el socket actual a la lista de sockets asociados con este número de orden
@@ -43,7 +46,7 @@ io.on('connection', (socket) => {
             text: message.text,
             createdAt: message.createdAt
         }
-        await guardarMensaje(saveMessage);
+        //await guardarMensaje(saveMessage);
         // Obtener la lista de sockets asociados con este número de orden
         const userSockets = usersMap.get(orderId) || [];    
         //Se guarda el mensaje en el map para mantener el historial
@@ -81,5 +84,7 @@ io.on('connection', (socket) => {
     });
 });
 
-const port = process.env.PORT || 3000;
-server.listen(port);
+const PORT = process.env.PORT;
+server.listen(PORT, function (){
+    console.log("Aplicacion corriendo en el puerto: ", PORT);
+});
